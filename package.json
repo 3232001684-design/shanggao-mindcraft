@@ -1,5 +1,5 @@
 {
-  "name": "shanggao-mindcraft",
+  "name": "mc-instructor",
   "version": "1.0.0",
   "description": "Multi-bot Minecraft training system: an LLM 'instructor' (trainer) drives bots through a staged task curriculum with hard RCON acceptance, a rotating free LLM pool (NVIDIA NIM / agnes / Kilo) with per-route token buckets, and persistent self-learned action skills.",
   "license": "MIT",

@@ -1,4 +1,4 @@
-// 商高3 · 混合大脑 v8: NVIDIA (免费) + Agnes (免费兜底)
+// mc-instructor · 混合大脑 v8: NVIDIA (免费) + Agnes (免费兜底)
 // 说话= nemotron 专线 | 干活= 五模型轮转 | 记忆=双线对半 | 看图= VL
 import OpenAIApi from 'openai';
 import fs from 'fs';

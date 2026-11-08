@@ -82,7 +82,7 @@ export class GPT {
             } else {
                 console.log(err);
                 if (retry < 2 && /429|timeout|ECONNRESET|ECONNREFUSED|500|502|503|aborted|fetch|socket/i.test(String(err.message))) {
-                    console.log('[shanggao] retry ' + (retry+1) + ' in 4s (pool jitter)');
+                    console.log('[mc-instructor] retry ' + (retry+1) + ' in 4s (pool jitter)');
                     await new Promise(r => setTimeout(r, 4000));
                     return await this.sendRequest(turns, systemMessage, stop_seq, retry + 1);
                 }

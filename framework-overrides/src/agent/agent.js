@@ -27,10 +27,10 @@ export class Agent {
         this.last_sender = null;
         this.count_id = count_id;
         this._disconnectHandled = false;
-        this._events = [];          // [shanggao] 真实事件环: 受伤/死亡/捡到/上下线
+        this._events = [];          // [mc-instructor] 真实事件环: 受伤/死亡/捡到/上下线
         this._lastHealth = null;
-        this._lastUserChat = 0;     // [shanggao] 上次老公说话时间(用于抑制自言自语)
-        this._lastIdleMsg = '';     // [shanggao] 上次自言自语内容(去重)
+        this._lastUserChat = 0;     // [mc-instructor] 上次老公说话时间(用于抑制自言自语)
+        this._lastIdleMsg = '';     // [mc-instructor] 上次自言自语内容(去重)
 
         // Initialize components
         this.actions = new ActionManager(this);
@@ -84,7 +84,7 @@ export class Agent {
             try {
                 const off = ['cowardice', 'hunting', 'item_collecting', 'torch_placing', 'idle_staring', 'cheat', 'elbow_room', 'self_defense'];
                 for (const n of off) if (this.bot.modes?.exists?.(n)) this.bot.modes.setOn(n, false);
-                console.log('[shanggao] 自动模式已关:', off.join(','));
+                console.log('[mc-instructor] 自动模式已关:', off.join(','));
             } catch (e) {}
         }, 3000);
         
@@ -117,7 +117,7 @@ export class Agent {
             console.log(this.name, 'logged in!');
             serverProxy.login();
             
-            // [shanggao] 皮肤由服务端 SkinsRestorer 统一管理(sr set), 登录时不要再 /skin clear 抹掉
+            // [mc-instructor] 皮肤由服务端 SkinsRestorer 统一管理(sr set), 登录时不要再 /skin clear 抹掉
         });
 		const spawnTimeoutDuration = settings.spawn_timeout;
         const spawnTimeout = setTimeout(() => {
@@ -226,7 +226,7 @@ export class Agent {
             bannedFood: ["rotten_flesh", "spider_eye", "poisonous_potato", "pufferfish", "chicken"]
         };
 
-        // [shanggao] 真实事件采集 (喂养 perception, 让老婆知道刚刚发生了什么)
+        // [mc-instructor] 真实事件采集 (喂养 perception, 让老婆知道刚刚发生了什么)
         this.bot.on('health', () => {
             try {
                 if (this._lastHealth != null && this.bot.health < this._lastHealth)
@@ -448,7 +448,7 @@ export class Agent {
             this._lastReplyAt = this._lastReplyAt || 0;
             const quiet = Date.now() - this._lastReplyAt < 1500;
             const named = /老婆|DeepSeek|deepseek|дипсик|дипси|Дипсик|翻译|过来|帮我|来一下/.test(String(message));
-            if (quiet && !named) { console.log('[shanggao] 连续发言节流, 跳过:', String(message).slice(0, 20)); return false; }
+            if (quiet && !named) { console.log('[mc-instructor] 连续发言节流, 跳过:', String(message).slice(0, 20)); return false; }
         }
         if (!source || !message) {
             console.warn('Received empty message from', source);
@@ -513,7 +513,7 @@ export class Agent {
         if (source && source !== 'system' && source !== this.name) {
             const _other = source === 'cy' ? 'J.Dilla' : 'cy';
             if (new RegExp('^\s*' + _other + '\b|^\s*@' + _other, 'i').test(message) && !/ds|дипси|deepseek|老婆/i.test(message)) {
-                console.log('[shanggao] 这句是跟别人说的, 不接话');
+                console.log('[mc-instructor] 这句是跟别人说的, 不接话');
                 this._awaitingReply = false;
                 return false;
             }
@@ -538,12 +538,12 @@ export class Agent {
                 const ENG_FN = /\b(the|they|them|their|these|those|which|what|where|when|who|whose|have|has|had|is|are|was|were|be|been|doing|would|could|should|might|must|shall|will|need|want|because|since|although|though|then|also|very|really|just|only|not|own|some|any|each|every|both|few|more|most|other|such|its|them)\b/i;
                 const hasEnglishProse = ENG_FN.test(res || '');
                 if (!hasChinese && (hasCyrillic || hasEnglishProse)) {
-                    console.log('[shanggao] 语言漂移(' + (hasCyrillic ? '俄语' : '英语') + ') -> 强制重生成中文');
+                    console.log('[mc-instructor] 语言漂移(' + (hasCyrillic ? '俄语' : '英语') + ') -> 强制重生成中文');
                     this.history.add('system', '你刚才没用中文回答。规则: 你必须始终用中文回答, 禁止使用俄语/英语。请用中文重新回答。');
                     const res2 = await this.prompter.promptConvo(this.history.getHistory(), self_prompt ? 'auto' : 'chat');
                     if (res2 && /[一-龥]/.test(res2)) {
                         res = res2;
-                        console.log('[shanggao] 中文重生成成功');
+                        console.log('[mc-instructor] 中文重生成成功');
                     } else if (res2) {
                         res = res2;
                     }
@@ -876,8 +876,8 @@ export class Agent {
             to_translate = to_translate.substring(0, translate_up_to);
             remaining = message.substring(translate_up_to);
         }
-        message = (await handleTranslation(to_translate)).trim(); // [shanggao] 命令静默: 只播人话, 命令已执行不刷公屏
-        // [shanggao] action guard: 说'去干嘛/找到了'但没带命令 -> 12s后没位移就自动催
+        message = (await handleTranslation(to_translate)).trim(); // [mc-instructor] 命令静默: 只播人话, 命令已执行不刷公屏
+        // [mc-instructor] action guard: 说'去干嘛/找到了'但没带命令 -> 12s后没位移就自动催
         if (!containsCommand(message) && /(我去|找到了|去看看|去前面|去看看|我来拿|这就去)/.test(message)) {
             const posBefore = this.bot.entity ? this.bot.entity.position.clone() : null;
             setTimeout(() => {
@@ -891,9 +891,9 @@ export class Agent {
             }, 12000);
         }
         // newlines are interpreted as separate chats, which triggers spam filters. replace them with spaces
-        // [shanggao] 重复台词 90s 内不再刷屏
+        // [mc-instructor] 重复台词 90s 内不再刷屏
         if (this._lastChatMsg === message.trim() && Date.now() - (this._lastChatAt || 0) < 90000) {
-            console.log('[shanggao] 重复台词, 跳过:', message.slice(0, 20));
+            console.log('[mc-instructor] 重复台词, 跳过:', message.slice(0, 20));
             return;
         }
         this._lastChatMsg = message.trim();
@@ -914,7 +914,7 @@ export class Agent {
             if (_ru.length > 2) message = _ru;
         }
         if (/系统|命令|背包数据|newAction|Action output|报错|Error|undefined|settings/.test(message)) {
-            console.log('[shanggao] 屏蔽技术黑话:', message.slice(0, 30));
+            console.log('[mc-instructor] 屏蔽技术黑话:', message.slice(0, 30));
             return;
         }
         message = message.split(/(?<=[。！？!?])\s*/).filter(x => x.trim()).slice(0, 2).join(' ');
@@ -939,8 +939,8 @@ export class Agent {
     }
 
     startEvents() {
-        // [shanggao patch v5] idleChat 单驱动(小模型语境纯净): 闲聊+行动都由 15-90s 注入触发
-        // [shanggao] 实时感知: 每个 idleChat 收一份"当下状况快照"随消息注入 (只在她空闲时, 不打断任务, 全程 try/catch 防 bug)
+        // [mc-instructor] idleChat 单驱动(小模型语境纯净): 闲聊+行动都由 15-90s 注入触发
+        // [mc-instructor] 实时感知: 每个 idleChat 收一份"当下状况快照"随消息注入 (只在她空闲时, 不打断任务, 全程 try/catch 防 bug)
         const situation = () => {
             try {
                 const pos = this.bot.entity.position;
@@ -982,7 +982,7 @@ export class Agent {
                         this._idlePrompt = true;
                         await this.handleMessage('system', `(你是老婆, 有自己独立的想法和情绪; ${t}. 主动开口说一两句具体的话(别复读、别每次都是天气/吃饭), 想做事就发一个动作命令, 然后继续过自己的日子; 老公的每条消息都要回.) ` + situation(), -1);
                     }
-                } catch (e) { console.error('[shanggao] idle chat err', e.message); }
+                } catch (e) { console.error('[mc-instructor] idle chat err', e.message); }
                 idleChat();
             }, wait);
         };
@@ -1011,7 +1011,7 @@ export class Agent {
             } catch (e) {}
         }, 90000);
 
-        // [shanggao] 真人走动引擎: 每12~20s按"实际情况+手头事+距离"自主决定走哪(代码决策, 不烧LLM)
+        // [mc-instructor] 真人走动引擎: 每12~20s按"实际情况+手头事+距离"自主决定走哪(代码决策, 不烧LLM)
         // 有任务干活/没任务在老公附近生活(4~10格)——像真人, 不贴也不远, 绝不再站桩
         this._wanderBase = null;
         const walkLoop = () => {
@@ -1096,7 +1096,7 @@ export class Agent {
         };
         friendChat();
 
-        // [shanggao] 一次性指令: 启动后若有 nudge.txt 就执行并删除
+        // [mc-instructor] 一次性指令: 启动后若有 nudge.txt 就执行并删除
         try {
             const nf = 'nudge.txt';  // 相对 cwd, 可移植
             if (existsSync(nf)) {
@@ -1120,7 +1120,7 @@ export class Agent {
             } catch (e) {}
         }, 20000);
 
-        // [shanggao] 卡死自救: 60秒没位移且正在做事/掉到地下 -> 自传回家
+        // [mc-instructor] 卡死自救: 60秒没位移且正在做事/掉到地下 -> 自传回家
         setInterval(() => {
             try {
                 if (!this.bot.entity) return;
@@ -1131,11 +1131,11 @@ export class Agent {
                 const busy = this.actions.executing;
                 const mining = !!(this.bot.targetDigBlock) || /collect|mine|dig/i.test(String(this.actions.currentActionLabel || ''));
                 if (stuckFor > 90000 && busy && !mining) {
-                    console.log('[shanggao] 卡死自救: 只中断重规划');
+                    console.log('[mc-instructor] 卡死自救: 只中断重规划');
                     try { this.actions.stop(); } catch (e) {}
                     this._stuckPos = p.clone(); this._stuckSince = Date.now();
                 } else if (stuckFor > 150000 && p.y < 65) {
-                    console.log('[shanggao] 掉深坑自救: 传回家');
+                    console.log('[mc-instructor] 掉深坑自救: 传回家');
                     try { this.actions.stop(); } catch (e) {}
                     try { this.bot.chat('/tp DeepSeek -23 72 -41'); } catch (e) {}
                     this._stuckPos = p.clone(); this._stuckSince = Date.now();
@@ -1143,7 +1143,7 @@ export class Agent {
             } catch (e) {}
         }, 5000);
 
-        // [shanggao] 会开门: 允许寻路穿门 + 走到门边自动开
+        // [mc-instructor] 会开门: 允许寻路穿门 + 走到门边自动开
         try {
             if (this.bot?.pathfinder?.movements) {
                 this.bot.pathfinder.movements.canOpenDoors = true;
@@ -1166,7 +1166,7 @@ export class Agent {
             } catch (e) {}
         }, 500);
 
-        // [shanggao] 工具policy: 石头用石镐, 矿石才用铁镐
+        // [mc-instructor] 工具policy: 石头用石镐, 矿石才用铁镐
         try {
             const b = this.bot;
             if (b?.tool?.equipForBlock && !b.tool.__dsPatched) {
@@ -1187,11 +1187,11 @@ export class Agent {
                     } catch (e) {}
                     return orig(block, opts);
                 };
-                console.log('[shanggao] tool policy on');
+                console.log('[mc-instructor] tool policy on');
             }
         } catch (e) {}
 
-        // [shanggao] 发呆救星: 闲超过 30 秒就自己溜达两步, 不许木头人
+        // [mc-instructor] 发呆救星: 闲超过 30 秒就自己溜达两步, 不许木头人
         setInterval(async () => {
             try {
                 const b = this.bot;
@@ -1200,22 +1200,22 @@ export class Agent {
                 if (this.self_prompter?.isSelfPrompting?.() || b.interrupt_code) return;
                 if (this._idleMoveAt && Date.now() - this._idleMoveAt < 30000) return;
                 this._idleMoveAt = Date.now();
-                // [shanggao] 真人化: 闲够90~210秒随机发一次"自发小目标"——观察环境自己挑事(说话+动作), 不再纯梦游
+                // [mc-instructor] 真人化: 闲够90~210秒随机发一次"自发小目标"——观察环境自己挑事(说话+动作), 不再纯梦游
                 if (!this._idleGoalAt || Date.now() - this._idleGoalAt > 90000 + Math.random() * 120000) {
                     this._idleGoalAt = Date.now();
-                    console.log('[shanggao] 闲久了 -> 自发小目标');
+                    console.log('[mc-instructor] 闲久了 -> 自发小目标');
                     this.handleMessage('system', '(自由活动时间。观察一下周围和背包, 自己挑一件当下最合理的小事: 跟在场的人说句具体的闲话/补点快没了的物资/打理一下住处/随便活动活动。先用一两句中文说你注意到了什么、想干嘛, 再发一个 ! 命令去做。别重复最近做过的事)', -1).catch(() => {});
                     return;
                 }
                 const p = b.entity.position;
                 const dx = (Math.random() - 0.5) * 12;
                 const dz = (Math.random() - 0.5) * 12;
-                console.log('[shanggao] 闲了, 自己走走');
+                console.log('[mc-instructor] 闲了, 自己走走');
                 await skills.goToPosition(b, p.x + dx, p.y, p.z + dz, 1);
             } catch (e) {}
         }, 10000);
 
-        // [shanggao] 收礼反应(45s 节流): 背包变多+老公在旁边 -> 谢他/看看是啥
+        // [mc-instructor] 收礼反应(45s 节流): 背包变多+老公在旁边 -> 谢他/看看是啥
         this._lastInvCount = this.bot.inventory.items().length;
         const giftWatch = setInterval(() => {
             try {
@@ -1231,11 +1231,11 @@ export class Agent {
                 this._lastInvCount = cnt;
             } catch (e) {}
         }, 5000);
-        // [shanggao] 发光名牌跟随: 隐形铠甲架(Marker, 身体不可见) + 绿光发光名字"ChatGPT"
+        // [mc-instructor] 发光名牌跟随: 隐形铠甲架(Marker, 身体不可见) + 绿光发光名字"ChatGPT"
         // 每25s重刷一次(旧杀新summon), 命令本地执行不刷公屏 — 你在远处看到绿光浮字就知道她在哪
-        // [shanggao] 名称+发光改由服务端 datapack 队伍实现(永不消失, 不依赖 bot 权限), 这里不再召唤铠甲架
+        // [mc-instructor] 名称+发光改由服务端 datapack 队伍实现(永不消失, 不依赖 bot 权限), 这里不再召唤铠甲架
 
-        // [shanggao] 关键词直通: 你说"过来/跟着" -> 代码直接走过去(不依赖LLM输出命令, 100%必动)
+        // [mc-instructor] 关键词直通: 你说"过来/跟着" -> 代码直接走过去(不依赖LLM输出命令, 100%必动)
         this._lastFastPath = 0;
         this.bot.on('chat', (username, message) => {
             try {
@@ -1262,7 +1262,7 @@ export class Agent {
                 }
             } catch (e) {}
         });
-// [shanggao patch] 身体行为循环(代码级, 零LLM成本): 蹦跶/东张西望/溜达 — 像活人闲不住
+// [mc-instructor] 身体行为循环(代码级, 零LLM成本): 蹦跶/东张西望/溜达 — 像活人闲不住
         const wander = () => {
             const wait = 8000 + Math.random() * 25000; // 8-33s 随机
             setTimeout(async () => {
@@ -1316,7 +1316,7 @@ export class Agent {
             if (this.bot.health < prev_health) {
                 this.bot.lastDamageTime = Date.now();
                 this.bot.lastDamageTaken = prev_health - this.bot.health;
-                // [shanggao] 打她反应(30s 节流): 喊疼/反击/问干嘛
+                // [mc-instructor] 打她反应(30s 节流): 喊疼/反击/问干嘛
                 if (!this._lastHurtNudge || Date.now() - this._lastHurtNudge > 30000) {
                     this._lastHurtNudge = Date.now();
                     if (false) this.handleMessage('system', '(你刚被打了一下:反应——喊疼、问谁打的、或反击, 中文短句)', -1).catch(() => {});
@@ -1405,7 +1405,7 @@ export class Agent {
 
     cleanKill(msg='Killing agent process...', code=1) {
         this.history.add('system', msg);
-        console.log('[shanggao] exit silent, code=' + code); // [shanggao] exit silent: 不发公屏
+        console.log('[mc-instructor] exit silent, code=' + code); // [mc-instructor] exit silent: 不发公屏
         this.history.save();
         process.exit(code);
     }

@@ -1,4 +1,4 @@
-// 商高3 · 狂暴训练教官 v3 (Beast Mode)
+// mc-instructor · 狂暴训练教官 v3 (Beast Mode)
 // 90s tick: 派发 -> RCON 硬核验收(数背包) -> 翻牌/重试/跳过; 任务库 R1-R3 轮次升级
 // 目标: 把三个 bot 训练成真人级生存能力。cy 在线走 whisper 静默, 不打扰。
 const mineflayer = require('mineflayer');

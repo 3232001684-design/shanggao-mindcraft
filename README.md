@@ -1,4 +1,4 @@
-# 商高 MindCraft 训练系统
+# mc-instructor MindCraft 训练系统
 
 多 bot 的 Minecraft LLM 训练系统：一个 LLM「教官」(trainer) 用 RCON 硬核验收，把多个 bot 按 R1→R6 任务课程逐级练成真人级生存能力；底层模型走「多免费 LLM 池轮转」(NVIDIA NIM / agnes / Kilo)，每路带独立令牌桶限流；bot 还能**自己写行动代码**(`!newAction`) 沉淀成可复用的技能函数。
 
