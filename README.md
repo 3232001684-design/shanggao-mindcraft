@@ -62,13 +62,23 @@ cp keys.example.json keys.json   # 填你三池的真实 API key
 
 ### 服务端 / RCON（`src/trainer.js` 顶部）
 
-```js
-const RC = { host: '127.0.0.1', port: 25575, pw: 'sg2026bot' };   // RCON
-const BOTS = ['DeepSeek', 'Nemo', 'Luna'];                        // 被训练的 bot
-coach: { host: '127.0.0.1', port: 25566, username: 'coach', version: '1.21.4' }  // 教官连接参数
+全部走环境变量，**不写死真实值**（克隆下来即可跑，按你服务器改）：
+
+```bash
+MC_RCON_HOST=127.0.0.1 MC_RCON_PORT=25575 MC_RCON_PW='你的RCON密码' \
+MC_HOST=127.0.0.1 MC_PORT=25566 MC_VERSION=1.21.4 \
+MC_BOTS='DeepSeek,Nemo,Luna' MC_COACH_NAME=coach \
+node src/trainer.js
 ```
 
-按你的服务器/版本改这几处即可。
+| 变量 | 默认 | 说明 |
+|---|---|---|
+| `MC_RCON_HOST` / `MC_RCON_PORT` / `MC_RCON_PW` | `127.0.0.1` / `25575` / 空 | 教官 RCON 验收通道 |
+| `MC_HOST` / `MC_PORT` / `MC_VERSION` | `127.0.0.1` / `25566` / `1.21.4` | bot 连接的世界服 |
+| `MC_BOTS` | `DeepSeek,Nemo,Luna` | 被训练的 bot（对应 `profiles/`） |
+| `MC_COACH_NAME` | `coach` | 教官自己的进服名 |
+
+> `trainer.js` 里大量出现的主玩家名约定为 **`cy`**（教官用它做任务目标/验收锚点）。如果你的服务器里主玩家不叫 `cy`，把 `trainer.js` 和 `start_bot.js` 里的 `cy` 统一替换成你的玩家名即可。
 
 ### 人设 `profiles/*.json`
 

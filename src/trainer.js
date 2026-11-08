@@ -10,7 +10,14 @@ const log = (...a) => { const s = a.join(' '); console.log(s); try { fs.appendFi
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ============ RCON ============
-const RC = { host: '127.0.0.1', port: 25575, pw: 'sg2026bot' };
+// 部署参数: 可用环境变量覆盖, 不写死在你的真实服务器值上。
+// 例: MC_RCON_HOST=... MC_RCON_PORT=... MC_RCON_PW=... node src/trainer.js
+// 玩家名 cy/老公 等是这套人设的约定, 如果你的服务器里玩家名不同, 相应替换即可。
+const RC = {
+  host: process.env.MC_RCON_HOST || '127.0.0.1',
+  port: Number(process.env.MC_RCON_PORT || 25575),
+  pw:   process.env.MC_RCON_PW || '',        // 你的 RCON 密码, 勿提交真实值
+};
 function rconOnce(cmd) {
   return new Promise((resolve, reject) => {
     const s = net.createConnection({ host: RC.host, port: RC.port });
@@ -270,12 +277,18 @@ function getNextTask(botName) {
 
 
 // ============ 教官连接 ============
-const BOTS = ['DeepSeek', 'Nemo', 'Luna'];
+// BOTS = 被训练的 bot 名 (对应 profiles/ 下的人设)。按你的编队增删。
+const BOTS = (process.env.MC_BOTS || 'DeepSeek,Nemo,Luna').split(',');
 const online = {};
 let coach = null, cyOnline = false;
-
+const COACH = {
+  host: process.env.MC_HOST || '127.0.0.1',
+  port: Number(process.env.MC_PORT || 25566),
+  username: process.env.MC_COACH_NAME || 'coach',
+  version: process.env.MC_VERSION || '1.21.4',
+};
 function spawnCoach() {
-  coach = mineflayer.createBot({ host: '127.0.0.1', port: 25566, username: 'coach', auth: 'offline', version: '1.21.4' });
+  coach = mineflayer.createBot({ host: COACH.host, port: COACH.port, username: COACH.username, auth: 'offline', version: COACH.version });
   coach.on('login', () => log('[coach] logged in'));
   coach.on('spawn', () => log('[coach] spawned'));
   coach.on('error', (e) => log('[coach] error: ' + e.message));
