@@ -1,0 +1,19 @@
+{
+  "name": "shanggao-mindcraft",
+  "version": "1.0.0",
+  "description": "Multi-bot Minecraft training system: an LLM 'instructor' (trainer) drives bots through a staged task curriculum with hard RCON acceptance, a rotating free LLM pool (NVIDIA NIM / agnes / Kilo) with per-route token buckets, and persistent self-learned action skills.",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node scripts/sync-overrides.js",
+    "bots": "node src/start_bot.js",
+    "trainer": "node src/trainer.js",
+    "sync": "node scripts/sync-overrides.js"
+  },
+  "dependencies": {
+    "mindcraft": "0.1.4-2",
+    "mineflayer": "^4.32.1"
+  },
+  "bin": {
+    "sync-overrides": "scripts/sync-overrides.js"
+  }
+}

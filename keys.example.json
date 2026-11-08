@@ -1,0 +1,5 @@
+{
+  "NVIDIA_API_KEY": "nvapi-xxxx",
+  "DEEPSEEK_API_KEY": "sk-xxxx",
+  "OPENAI_API_KEY": "your-agnes-via-openai-compatible-endpoint-key"
+}

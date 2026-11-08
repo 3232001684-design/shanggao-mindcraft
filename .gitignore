@@ -1,0 +1,38 @@
+# --- 密钥 / 个人配置: 永不入库 ---
+keys.json
+.env
+*.secret.json
+
+# --- 运行时产物: bot 的私人记忆、诊断日志、自学习产物 ---
+bots/
+**/memory.json
+**/last_profile.json
+**/histories/
+**/action-code/
+diag.log
+hybrid.log
+trainer.log
+bot121.log
+*.diag.log
+
+# --- 世界存档 (大二进制, 不含在仓库) ---
+world/
+_levels/
+*.dat
+*.mca
+region/
+level.dat
+playerdata/
+
+# --- 日志 ---
+*.log
+logs/
+
+# --- node ---
+node_modules/
+npm-debug.log*
+
+# --- 系统垃圾 ---
+.DS_Store
+Thumbs.db
+nudge.txt
